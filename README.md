@@ -1,0 +1,1 @@
+# race-application-query-service
