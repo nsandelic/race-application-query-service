@@ -7,10 +7,12 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 @Service
 public class RaceServiceImpl implements RaceService {
 
+    private static final Logger logger = Logger.getLogger(RaceServiceImpl.class.getName());
     private final RaceRepository raceRepository;
 
     @Autowired
@@ -20,11 +22,13 @@ public class RaceServiceImpl implements RaceService {
 
     @Override
     public List<Race> getAllRaces() {
+        logger.info("RaceServiceImpl - > getAllRaces()");
         return raceRepository.findAll();
     }
 
     @Override
     public Race getRaceById(UUID id) {
+        logger.info("RaceServiceImpl - > getRaceById()");
         return raceRepository.findById(id).orElse(null);
     }
 }

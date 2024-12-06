@@ -10,11 +10,13 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.Optional;
+import java.util.logging.Logger;
 
 @Controller
 @CrossOrigin(origins = "http://localhost:4200")
 public class RaceEventListener {
 
+    private static final Logger logger = Logger.getLogger(RaceEventListener.class.getName());
     private final RaceRepository raceRepository;
 
     @Autowired
@@ -25,9 +27,9 @@ public class RaceEventListener {
     @MessageMapping("/races")
     public void handleRaceEvent(@RequestBody RaceEvent  raceEvent) {
 
+        logger.info("RaceEventListener - > handleRaceEvent(),Event: " + raceEvent);
         String action = raceEvent.getAction();
         Race race = raceEvent.getRace();
-        System.out.println("Received event: " + raceEvent.getAction() + " for race: " + raceEvent.getRace().getId());
 
         if ("CREATE".equals(action)) {
             try {
