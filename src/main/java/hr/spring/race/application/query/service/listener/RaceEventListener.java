@@ -5,11 +5,12 @@ import hr.spring.race.application.query.service.model.event.RaceEvent;
 import hr.spring.race.application.query.service.repository.RaceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.Optional;
 
-@Component
+@Controller
 public class RaceEventListener {
 
     private final RaceRepository raceRepository;
@@ -19,20 +20,34 @@ public class RaceEventListener {
         this.raceRepository = raceRepository;
     }
 
-    @MessageMapping("/topic/race-events")
-    public void handleRaceEvent(RaceEvent raceEvent) {
+    @MessageMapping("/races")
+    public void handleRaceEvent(@RequestBody RaceEvent  raceEvent) {
+
         String action = raceEvent.getAction();
         Race race = raceEvent.getRace();
+        System.out.println("Received event: " + raceEvent.getAction() + " for race: " + raceEvent.getRace().getId());
 
         if ("CREATE".equals(action)) {
-            raceRepository.save(race);
-        } else if ("UPDATE".equals(action)) {
-            Optional<Race> existingRace = raceRepository.findById(race.getId());
-            if (existingRace.isPresent()) {
+            try {
                 raceRepository.save(race);
+            }catch (Exception e) {
+                e.printStackTrace();
             }
-        } else if ("DELETE".equals(action)) {
-            raceRepository.deleteById(race.getId());
+        } else if ("UPDATE".equals(action)) {
+            try {
+                Optional<Race> existingRace = raceRepository.findById(race.getId());
+                if (existingRace.isPresent()) {
+                 raceRepository.save(race);
+                }
+            }catch (Exception e) {
+            e.printStackTrace();
         }
+        } else if ("DELETE".equals(action)) {
+            try {
+                raceRepository.deleteById(race.getId());
+             }catch (Exception e) {
+             e.printStackTrace();
+             }
+            }
     }
 }

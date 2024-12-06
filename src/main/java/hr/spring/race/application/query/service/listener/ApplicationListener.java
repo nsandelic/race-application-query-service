@@ -6,10 +6,13 @@ import hr.spring.race.application.query.service.repository.ApplicationRepository
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.Optional;
 
-@Component
+
+@Controller
 public class ApplicationListener {
 
     private final ApplicationRepository applicationRepository;
@@ -19,20 +22,26 @@ public class ApplicationListener {
         this.applicationRepository = applicationRepository;
     }
 
-    @MessageMapping("/topic/application-events")
-    public void handleApplicationEvents(ApplicationEvent applicationEvent) {
+    @MessageMapping("/applications")
+    public void handleApplicationEvents(@RequestBody ApplicationEvent applicationEvent) {
+
         String action = applicationEvent.getAction();
         Application application = applicationEvent.getApplication();
+        System.out.println("Received event: " + action + " for application: " + application.getId());
+        System.out.println("CREATE".equals(action));
 
         if ("CREATE".equals(action)) {
-            applicationRepository.save(application);
-        } else if ("UPDATE".equals(action)) {
-            Optional<Application> existingApplication = applicationRepository.findById(application.getId());
-            if (existingApplication.isPresent()) {
+            try{
                 applicationRepository.save(application);
+            }catch (Exception e) {
+                e.printStackTrace();
             }
         } else if ("DELETE".equals(action)) {
-            applicationRepository.deleteById(application.getId());
+            try{
+                applicationRepository.deleteById(application.getId());
+            }catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 }

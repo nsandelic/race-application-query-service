@@ -18,7 +18,6 @@ import java.util.UUID;
 public class Application {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
     @NotBlank(message = "First name is required.")
     @Size(max = 255, message = "First name must be 255 characters or less.")
